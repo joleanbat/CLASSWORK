@@ -1,0 +1,29 @@
+/* styles.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #007BFF;
+    /* blue background */
+    color: white;
+    padding: 8px;
+}
+
+td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+img {
+    max-width: 120px;
+    height: auto;
+}
+
+iframe {
+    width: 200px;
+    height: 113px;
+    /* 16:9 aspect ratio */
+}
