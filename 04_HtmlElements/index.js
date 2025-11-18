@@ -1,5 +1,6 @@
 function loadPage(page) {
-    document.getElementById("contentFrame").src = page;
+    let iframgeElement = document.getElementById("contentFrame");
+    iframgeElement.src = page;
 
     // Close sidebar on mobile
     document.getElementById("sidebar").classList.remove("show");
