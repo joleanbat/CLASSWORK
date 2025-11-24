@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>טופס חישוב</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f3f3f3;
+            text-align: center;
+        }
+
+        .calc-box {
+            background: #0b0b0b;
+            color: #ff2d7a;
+            border-radius: 20px;
+            padding: 25px;
+            width: 380px;
+            margin: 40px auto;
+            font-size: 20px;
+        }
+
+        .calc-box label {
+            color: #ff2d7a;
+            font-size: 18px;
+        }
+
+        .custom-input,
+        .custom-select,
+        .custom-btn,
+        textarea {
+            background: #0b0b0b;
+            color: #ff2d7a;
+            border: 1px solid #ff2d7a;
+            border-radius: 10px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .custom-btn:hover {
+            background: #ff2d7a;
+            color: #000;
+        }
+
+        textarea {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="mt-4">Bootstrap – טופס חישוב</h1>
+
+    <div class="calc-box">
+
+        <label>מספר 1</label>
+        <input type="number" class="custom-input" id="num1">
+
+        <label>מספר 2</label>
+        <input type="number" class="custom-input" id="num2">
+
+        <label>פעולה</label>
+        <select class="custom-select" id="operation">
+            <option value="+">+</option>
+            <option value="-">−</option>
+            <option value="*">×</option>
+            <option value="/">÷</option>
+        </select>
+
+        <label> = </label>
+        <button class="custom-btn" onclick="calc()">חשב</button>
+
+        <label>תוצאה מוצגת כאן</label>
+        <input type="text" id="output" class="custom-input" disabled>
+
+        <label>לוגים</label>
+        <textarea id="log"></textarea>
+
+    </div>
+
+    <script>
+
+        function calc() {
+            let a = parseFloat(document.getElementById("num1").value);
+            let b = parseFloat(document.getElementById("num2").value);
+            let op = document.getElementById("operation").value;
+            let output = document.getElementById("output");
+
+            let result = 0;
+            switch (op) {
+                case "+": result = a + b; break;
+                case "-": result = a - b; break;
+                case "*": result = a * b; break;
+                case "/": result = b === 0 ? "אסור 0" : a / b; break;
+            }
+
+            output.value = result;
+
+            // add log
+            print(`פעולה: ${a} ${op} ${b} = ${result}`, true);
+        }
+
+        function print(msg, append) {
+            const ta = document.getElementById("log");
+            if (append) {
+                ta.value += msg + "\n";
+            } else {
+                ta.value = msg + "\n";
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
