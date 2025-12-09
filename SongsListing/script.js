@@ -1,60 +1,73 @@
-
-
 const form = document.getElementById('songForm');
 const list = document.getElementById('songList');
 const submitBtn = document.getElementById('submitBtn');
+const hiddenId = document.getElementById('songId');
 
-//if not exsist in localStorage get empty array else
-//get json text and convert it to object json
+// load songs from localStorage or empty array
 let songs = JSON.parse(localStorage.getItem('songs')) || [];
 
-//User Click the Add Button
+// initial render
+renderSongs();
+
+// Form submit handler: add or save edit
 form.addEventListener('submit', (e) => {
-    //Dont submit the for to the server yetlet me handle it here
     e.preventDefault();
 
-    //Read Forms Data
-    const title = document.getElementById('title').value;
-    const url = document.getElementById('url').value;
+    // Read form values
+    const titleInput = document.getElementById('title');
+    const urlInput = document.getElementById('url');
+    const title = titleInput.value.trim();
+    const url = urlInput.value.trim();
 
-    //TODO VALIDATE FIELDS
-    //create JSON OBJ Based on URL title
-    const song = {
-        id: Date.now(),  // Unique ID
-        title: title,
-        url: url,
-        dateAdded: Date.now()
-    };
+    if (!title || !url) return; // simple guard
 
+    const editingId = hiddenId.value;
 
-    songs.push(song);
+    if (editingId) {
+        // Edit mode: find and update the song
+        const idNum = Number(editingId);
+        const idx = songs.findIndex(s => s.id === idNum);
+        if (idx !== -1) {
+            songs[idx].title = title;
+            songs[idx].url = url;
+            songs[idx].dateUpdated = Date.now();
+        }
+        // exit edit mode
+        exitEditMode();
+    } else {
+        // Add new song
+        const song = {
+            id: Date.now(),
+            title,
+            url,
+            dateAdded: Date.now()
+        };
+        songs.push(song);
+    }
+
     saveAndRender();
-    //TO DO SAVE  AND RERENDER 
-
     form.reset();
 });
 
-
-
+// Save to localStorage and render
 function saveAndRender() {
-
     localStorage.setItem('songs', JSON.stringify(songs));
-    //TODO RELOAD UI
-
     renderSongs();
-
 }
 
+// Render table rows
 function renderSongs() {
     list.innerHTML = ''; // Clear current list
 
+    // optional: sort by newest first by default
+    // songs.sort((a,b) => (b.dateAdded || 0) - (a.dateAdded || 0));
+
     songs.forEach(song => {
-        // Create table row
         const row = document.createElement('tr');
 
         row.innerHTML = `
-            <td>${song.title}</td>
-            <td><a href="${song.url}" target="_blank" class="text-info">Watch</a></td>
+            <td>${escapeHtml(song.title)}</td>
+            <td><a href="${escapeAttr(song.url)}" target="_blank" class="text-info">Watch</a></td>
             <td class="text-end">
                 <button class="btn btn-sm btn-warning me-2" onclick="editSong(${song.id})">
                     <i class="fas fa-edit"></i>
@@ -68,12 +81,59 @@ function renderSongs() {
     });
 }
 
-
+// Delete a song
 function deleteSong(id) {
-    if (confirm('Are you sure?')) {
-        // Filter out the song with the matching ID
+    if (confirm('Are you sure you want to delete this song?')) {
         songs = songs.filter(song => song.id !== id);
+        // if we were editing the deleted song, exit edit mode
+        if (hiddenId.value && Number(hiddenId.value) === id) {
+            exitEditMode();
+            form.reset();
+        }
         saveAndRender();
     }
 }
 
+// Edit a song: populate the form and switch to save mode
+function editSong(id) {
+    const song = songs.find(s => s.id === id);
+    if (!song) return alert('Song not found');
+
+    document.getElementById('title').value = song.title;
+    document.getElementById('url').value = song.url;
+    hiddenId.value = song.id;
+
+    // change submit button to Save mode
+    submitBtn.classList.remove('btn-success');
+    submitBtn.classList.add('btn-primary');
+    submitBtn.innerHTML = `<i class="fas fa-save"></i> Save`;
+    // focus title input
+    document.getElementById('title').focus();
+}
+
+// Revert form to Add mode
+function exitEditMode() {
+    hiddenId.value = '';
+    submitBtn.classList.remove('btn-primary');
+    submitBtn.classList.add('btn-success');
+    submitBtn.innerHTML = `<i class="fas fa-plus"></i> Add`;
+}
+
+// small helpers to avoid injection via values (good practice)
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+function escapeAttr(str) {
+    if (!str) return '';
+    return str.replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// Expose functions to global scope so the inline onclick attributes work
+window.editSong = editSong;
+window.deleteSong = deleteSong;
