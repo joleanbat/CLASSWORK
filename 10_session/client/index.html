@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Session Client</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 40px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 6px;
+        }
+
+        #output {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>SESSION CLIENT</h2>
+
+    <input id="name" placeholder="Enter your name">
+    <br>
+
+    <button onclick="login()">Login</button>
+    <button onclick="dashboard()">Check Dashboard</button>
+    <button onclick="logout()">Logout</button>
+
+    <div id="output"></div>
+
+    <script>
+        const SERVER = "";
+        const output = document.getElementById("output");
+
+        function login() {
+            const name = document.getElementById("name").value;
+            fetch(`${SERVER}/login/${name}`, { credentials: "include" })
+                .then(r => r.text())
+                .then(t => output.innerText = t);
+        }
+
+        function dashboard() {
+            fetch(`${SERVER}/dashboard`, { credentials: "include" })
+                .then(r => r.text())
+                .then(t => output.innerText = t);
+        }
+
+        function logout() {
+            fetch(`${SERVER}/logout`, { credentials: "include" })
+                .then(r => r.text())
+                .then(t => output.innerText = t);
+        }
+    </script>
+
+</body>
+
+</html>
