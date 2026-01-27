@@ -1,47 +1,17 @@
-<!DOCTYPE html>
-<html>
+<div class="card p-4">
+    <h2 class="mb-2">Home</h2>
 
-<head>
-    <title>Home</title>
-    <style>
-        body {
-            font-family: Arial;
-            max-width: 700px;
-            margin: 40px auto;
-        }
+    <p>
+        Welcome, <strong>
+            <%= user.fullName %>
+        </strong> (<%= user.email %>)
+    </p>
 
-        input {
-            display: block;
-            margin: 8px 0;
-            padding: 8px;
-            width: 100%;
-        }
+    <div class="d-flex gap-2 mt-3">
+        <a class="btn btn-primary" href="/youtube">Go to YouTube</a>
 
-        button {
-            padding: 10px 14px;
-            cursor: pointer;
-        }
-
-        .box {
-            border: 1px solid #ddd;
-            padding: 16px;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="box">
-        <h2>Home</h2>
-
-        <p>Welcome, <b>
-                <%= user.fullName %>
-            </b> (<%= user.email %>)</p>
-
-        <form method="POST" action="/logout">
-            <button type="submit">Logout</button>
+        <form method="POST" action="/logout" class="m-0">
+            <button class="btn btn-outline-danger" type="submit">Logout</button>
         </form>
     </div>
-</body>
-
-</html>
+</div>

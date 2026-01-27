@@ -1,11 +1,10 @@
 class User {
-    constructor({ id, email, fullName, passwordHash, createdAt }) {
-        this.id = id;
-        this.email = email;
-        this.fullName = fullName;
-        this.passwordHash = passwordHash;
-        this.createdAt = createdAt;
+    constructor(row) {
+        this.id = row.id;
+        this.email = row.email;
+        this.fullName = row.fullName;
+        this.passwordHash = row.passwordHash;
+        this.createdAt = row.createdAt;
     }
 }
-
 module.exports = User;

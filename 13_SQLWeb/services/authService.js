@@ -3,22 +3,23 @@ const userRepo = require("../repositories/userRepository");
 
 class AuthService {
     async register({ email, fullName, password }) {
-        const existing = await userRepo.findByEmail(email);
-        if (existing) {
-            throw new Error("Email already registered.");
-        }
+        if (!email || !fullName || !password) throw new Error("Missing fields");
 
-        const passwordHash = await bcrypt.hash(password, 12);
-        const user = await userRepo.create({ email, fullName, passwordHash });
-        return user;
+        const exists = await userRepo.findByEmail(email);
+        if (exists) throw new Error("Email already exists");
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        return userRepo.create({ email, fullName, passwordHash });
     }
 
     async login({ email, password }) {
+        if (!email || !password) throw new Error("Missing fields");
+
         const user = await userRepo.findByEmail(email);
-        if (!user) throw new Error("Invalid email or password.");
+        if (!user) throw new Error("Invalid email or password");
 
         const ok = await bcrypt.compare(password, user.passwordHash);
-        if (!ok) throw new Error("Invalid email or password.");
+        if (!ok) throw new Error("Invalid email or password");
 
         return user;
     }

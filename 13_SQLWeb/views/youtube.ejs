@@ -1,0 +1,119 @@
+<div class="container py-4">
+
+    <h2 class="mb-3">YouTube Videos</h2>
+
+    <!-- SEARCH TOP -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form class="row g-2" method="GET" action="/youtube">
+                <div class="col-md-9">
+                    <input class="form-control form-control-lg" name="q" placeholder="Search videos..."
+                        value="<%= (q || '') %>">
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <% if (results && results.length> 0) { %>
+        <h4 class="mb-3">Results</h4>
+        <div class="row g-3 mb-5">
+            <% results.forEach(v=> { %>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="<%= v.thumbnailUrl %>" class="card-img-top" style="cursor:pointer"
+                            onclick="openVideo('<%= v.videoId %>')" alt="thumb">
+
+                        <div class="card-body d-flex flex-column">
+                            <div class="fw-bold mb-1">
+                                <%= v.title %>
+                            </div>
+                            <div class="text-muted small mb-3">
+                                <%= v.channelTitle %>
+                            </div>
+
+                            <form method="POST" action="/youtube/favorites/add" class="mt-auto">
+                                <input type="hidden" name="videoId" value="<%= v.videoId %>">
+                                <input type="hidden" name="title" value="<%= v.title %>">
+                                <input type="hidden" name="thumbnailUrl" value="<%= v.thumbnailUrl %>">
+                                <input type="hidden" name="channelTitle" value="<%= v.channelTitle %>">
+                                <input type="hidden" name="q" value="<%= (q || '') %>">
+                                <button class="btn btn-success btn-sm" type="submit">+ Favorite</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+        <% } %>
+
+            <!-- FAVORITES BOTTOM -->
+            <h4 class="mb-3">My Favorites</h4>
+
+            <% if (!favorites || favorites.length===0) { %>
+                <div class="alert alert-info">No favorites yet.</div>
+                <% } else { %>
+                    <div class="row g-3">
+                        <% favorites.forEach(f=> { %>
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="<%= f.thumbnail_url %>" class="card-img-top" style="cursor:pointer"
+                                        onclick="openVideo('<%= f.video_id %>')" alt="thumb">
+
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="fw-bold mb-1">
+                                            <%= f.title %>
+                                        </div>
+                                        <div class="text-muted small mb-3">
+                                            <%= f.channel_title || '' %>
+                                        </div>
+
+                                        <form method="POST" action="/youtube/favorites/remove" class="mt-auto">
+                                            <input type="hidden" name="videoId" value="<%= f.video_id %>">
+                                            <input type="hidden" name="q" value="<%= (q || '') %>">
+                                            <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                    </div>
+                    <% } %>
+</div>
+
+<!-- VIDEO MODAL: center screen, blocks scroll, stops on close -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Now Playing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <iframe id="videoFrame" src="about:blank" title="YouTube video" allow="autoplay; encrypted-media"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modalEl = document.getElementById("videoModal");
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    function openVideo(videoId) {
+        const frame = document.getElementById("videoFrame");
+        frame.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0";
+        modalInstance.show();
+    }
+
+    modalEl.addEventListener("hide.bs.modal", () => {
+        document.getElementById("videoFrame").src = "about:blank";
+    });
+</script>

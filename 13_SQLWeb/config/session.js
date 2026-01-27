@@ -7,7 +7,7 @@ module.exports = session({
         db: "sessions.sqlite",
         dir: path.join(__dirname, ".."),
     }),
-    secret: "replace_this_with_env_secret",
+    secret: process.env.SESSION_SECRET || "dev_secret_change_me",
     resave: false,
     saveUninitialized: false,
     cookie: {
